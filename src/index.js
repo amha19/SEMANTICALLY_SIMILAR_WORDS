@@ -3,6 +3,26 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import axios from 'axios';
+
+axios.defaults.baseURL = 'https://api.gavagai.se/v3';
+
+//Global request, respons and error handler
+axios.interceptors.request.use(request => {
+    console.log("inReq: ", request);
+    return request;
+}, error => {
+    console.log("inRqErr: ", error);
+    return Promise.reject(error);
+});
+
+axios.interceptors.response.use(response => {
+    console.log("inRes: ", response);
+    return response;
+}, error => {
+    console.log("inRsErr: ", error);
+    return Promise.reject(error);
+});
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
