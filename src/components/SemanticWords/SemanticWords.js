@@ -1,18 +1,17 @@
 import React from 'react';
 
+import styles from './SemanticWords.module.css';
+
 const semanticWords = (props) => {
     let words = props.words.map(items => (
-        <li key={items.word}><a href="#">{items.word}</a></li>
+        <li key={items.word}>{items.word}</li>
     ))
-    
-    if (props.unfoundWord) {
-        words = <p>Text was not found.</p>
-    }
+
     return (
-        <div>
-            <ol>
+        <div className={styles.SemanticWords}>
+            <ul>
                 {words}
-            </ol>
+            </ul>
         </div>
 
     );

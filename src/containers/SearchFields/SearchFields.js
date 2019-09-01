@@ -6,8 +6,7 @@ import SemanticWords from '../../components/SemanticWords/SemanticWords';
 import { languageCode } from '../../components/LanguageCode/languageCode';
 import styles from './SearchFields.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCoffee } from '@fortawesome/free-solid-svg-icons';
-import SearchIcon from '../../assets/searchIcon.png';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 class SearchFields extends Component {
 
@@ -18,24 +17,17 @@ class SearchFields extends Component {
         showWords: null,
         unfoundWord: false,
         error: false,
+        emptyArry: false,
         language: languageCode
     }
 
-    // componentDidMount() {
-    //     this.setState({ word: null });
-    // }
-
     axiosHandler = () => {
-        // 'https://api.gavagai.se/v3/lexicon/en/happiness?apiKey=123ok'
-        // https://api.gavagai.se/v3/lexicon/en/predict?additionalFields=SEMANTICALLY_SIMILAR_WORDS&apiKey=3acdef1f01cbceb88b132158abd466da&polarizeWord=false
-        // const baseUrl = 'https://api.gavagai.se/v3';
+        this.setState({ loading: true, showWords: null });
         const word = this.state.word;
         const language = this.state.language.value;
         const endpoint = '/lexicon/' + language + '/' + word
         const apiKey = '?additionalFields=SEMANTICALLY_SIMILAR_WORDS&apiKey=3acdef1f01cbceb88b132158abd466da&polarizeWord=false';
         const url = endpoint + apiKey;
-
-        this.setState({ loading: true, showWords: null });
 
         axios.get(url)
             .then(response => {
@@ -45,7 +37,7 @@ class SearchFields extends Component {
                         wordArrOne.push(response.data[element])
                 }
                 const wordArrTwo = wordArrOne[0];
-                console.log(response.data);
+                // console.log(response.data);
                 this.setState({
                     semanticData: wordArrTwo,
                     loading: false,
@@ -55,12 +47,16 @@ class SearchFields extends Component {
                 });
 
                 if (response.data.semanticallySimilarWords.length === 0) {
-                    this.setState({ unfoundWord: true, showWords: null });
+                    this.setState({ unfoundWord: true, showWords: null, error: false });
+                }
+
+                if (response.data.semanticallySimilarWords.length === undefined) {
+                    this.setState({ emptyArry: true });
                 }
             })
             .catch(
                 error => {
-                    console.log(error);
+                    // console.log(error);
                     this.setState({ error: true, loading: false });
                 }
             );
@@ -81,31 +77,34 @@ class SearchFields extends Component {
     }
 
     render() {
-        console.log("frR: ", this.state.language.value);
         let wordInput = (
-            <div>
-                <select
-                    className={styles.SelectBox}
-                    value={this.state.language.value}
-                    onChange={(event) => this.selectChangeHandler(event)}>
-                    {this.state.language.options.map(option => (
-                        <option key={option.value} value={option.value}>
-                            {option.displayValue}
-                        </option>
-                    ))}
-                </select>
-                <input
-                    className={styles.SearchField}
-                    type="text" placeholder="here" 
-                    onChange={this.inputChangeHandler} />
-                <button 
-                    className={styles.SearchButton} 
-                    onClick={this.axiosHandler}><FontAwesomeIcon icon={faCoffee} /></button>
+            <div className={styles.Wrap}>
+                <div className={styles.Search}>
+                    <select
+                        className={styles.SelectBox}
+                        value={this.state.language.value}
+                        onChange={(event) => this.selectChangeHandler(event)}>
+                        {this.state.language.options.map(option => (
+                            <option key={option.value} value={option.value}>
+                                {option.displayValue}
+                            </option>
+                        ))}
+                    </select>
+
+                    <input
+                        className={styles.SearchTerm}
+                        type="text" placeholder="Search"
+                        onChange={this.inputChangeHandler} />
+                    <button
+                        className={styles.SearchButton}
+                        onClick={this.axiosHandler}><FontAwesomeIcon icon={faSearch} /></button>
+                </div>
             </div>
         );
 
         let loading = this.state.loading ? <Spinner /> : null;
         let words;
+
         if (this.state.semanticData) {
             words = (
                 <div>
@@ -114,16 +113,25 @@ class SearchFields extends Component {
             );
         }
 
-        if (this.state.error) {
+        if (this.state.error && this.state.emptyArry) {
             words = <h3>Network Error. Please check the url.</h3>
         }
 
+        if (this.state.unfoundWord) {
+            words = <p>Text was not found.</p>
+        }
+
         return (
-            <div className={styles.SearchFields}>
-                {wordInput}
-                <h2>{this.state.showWords}</h2>
-                {loading}
-                {this.state.showWords !== '' ? words : <p>Input field is empety.</p> }                
+            <div>
+                <div>
+                    <h2 style={{ textAlign: 'center', color: '#00B4CC' }}>SEMANTICALLY SIMILAR WORDS</h2>
+                </div>
+                <div className={styles.SearchFields}>
+                    {wordInput}
+                    <h2 style={{ color: '#595959' }}>{this.state.showWords}</h2>
+                    {loading}
+                    {this.state.showWords !== '' ? words : <p>Input field is empty.</p>}
+                </div>
             </div>
         );
     }
