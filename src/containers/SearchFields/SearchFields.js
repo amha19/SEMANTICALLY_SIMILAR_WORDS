@@ -17,49 +17,50 @@ class SearchFields extends Component {
         showWords: null,
         unfoundWord: false,
         error: false,
-        emptyArry: false,
         language: languageCode
     }
 
-    axiosHandler = () => {
-        this.setState({ loading: true, showWords: null });
-        const word = this.state.word;
-        const language = this.state.language.value;
-        const endpoint = '/lexicon/' + language + '/' + word
-        const apiKey = '?additionalFields=SEMANTICALLY_SIMILAR_WORDS&apiKey=3acdef1f01cbceb88b132158abd466da&polarizeWord=false';
-        const url = endpoint + apiKey;
+    axiosHandler = (event) => {
+        if (event.key === 'Enter' || event === 'clicked') {
+            this.setState({ loading: true, showWords: null, unfoundWord: false });
 
-        axios.get(url)
-            .then(response => {
-                const wordArrOne = [];
-                for (let element in response.data) {
-                    if (element === 'semanticallySimilarWords')
-                        wordArrOne.push(response.data[element])
-                }
-                const wordArrTwo = wordArrOne[0];
-                // console.log(response.data);
-                this.setState({
-                    semanticData: wordArrTwo,
-                    loading: false,
-                    showWords: this.state.word,
-                    unfoundWord: false,
-                    error: false
-                });
+            const word = this.state.word;
+            const language = this.state.language.value;
+            const endpoint = '/lexicon/' + language + '/' + word
+            const apiKey = '?additionalFields=SEMANTICALLY_SIMILAR_WORDS&apiKey=3acdef1f01cbceb88b132158abd466da&polarizeWord=false';
+            const url = endpoint + apiKey;
 
-                if (response.data.semanticallySimilarWords.length === 0) {
-                    this.setState({ unfoundWord: true, showWords: null, error: false });
-                }
+            axios.get(url)
+                .then(response => {
+                    const wordArrOne = [];
+                    for (let element in response.data) {
+                        if (element === 'semanticallySimilarWords')
+                            wordArrOne.push(response.data[element])
+                    }
+                    const wordArrTwo = wordArrOne[0];
+                    // console.log(response.data);
+                    this.setState({
+                        semanticData: wordArrTwo,
+                        loading: false,
+                        showWords: this.state.word,
+                        unfoundWord: false,
+                        error: false
+                    });
 
-                if (response.data.semanticallySimilarWords.length === undefined) {
-                    this.setState({ emptyArry: true });
-                }
-            })
-            .catch(
-                error => {
-                    // console.log(error);
-                    this.setState({ error: true, loading: false });
-                }
-            );
+                    if (response.data.semanticallySimilarWords.length === 0) {
+                        this.setState({ unfoundWord: true, showWords: null, error: false });
+                    }
+                })
+                .catch(
+                    error => {
+                        // console.log(error);
+                        if (error.message === 'Network Error') {
+                            this.setState({ error: true, loading: false });
+                        }
+                    }
+                );
+        }
+
     }
 
     inputChangeHandler = (event) => {
@@ -94,31 +95,32 @@ class SearchFields extends Component {
                     <input
                         className={styles.SearchTerm}
                         type="text" placeholder="Search"
-                        onChange={this.inputChangeHandler} />
+                        onChange={this.inputChangeHandler}
+                        onKeyPress={(event) => this.axiosHandler(event)} />
                     <button
                         className={styles.SearchButton}
-                        onClick={this.axiosHandler}><FontAwesomeIcon icon={faSearch} /></button>
+                        onClick={() => this.axiosHandler('clicked')} ><FontAwesomeIcon icon={faSearch} /></button>
                 </div>
             </div>
         );
 
         let loading = this.state.loading ? <Spinner /> : null;
-        let words;
+        let words = null;
 
         if (this.state.semanticData) {
             words = (
                 <div>
-                    <SemanticWords words={this.state.semanticData} unfoundWord={this.state.unfoundWord} />
+                    <SemanticWords words={this.state.semanticData} />
                 </div>
             );
         }
 
-        if (this.state.error && this.state.emptyArry) {
-            words = <h3>Network Error. Please check the url.</h3>
+        if (this.state.error) {
+            words = <h4 style={{ color: 'red' }}>Error with the network.</h4>;
         }
 
         if (this.state.unfoundWord) {
-            words = <p>Text was not found.</p>
+            words = <p>Text was not found.</p>;
         }
 
         return (
@@ -128,7 +130,7 @@ class SearchFields extends Component {
                 </div>
                 <div className={styles.SearchFields}>
                     {wordInput}
-                    <h2 style={{ color: '#595959' }}>{this.state.showWords}</h2>
+                    <h2 style={{ color: '#595959', fontStyle: 'italic' }}>{this.state.showWords}</h2>
                     {loading}
                     {this.state.showWords !== '' ? words : <p>Input field is empty.</p>}
                 </div>

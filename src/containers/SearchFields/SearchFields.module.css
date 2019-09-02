@@ -2,18 +2,12 @@
 
 .SearchFields {
   margin: 20px auto;
-  padding-top: 80px;
-  padding-bottom: 10px; 
+  padding: 80px 5px 10px 5px;
+  /* padding-top: 80px;
+  padding-bottom: 10px;  */
   background: #f2f2f2;
   font-family: 'Open Sans', sans-serif;
   box-shadow: 0 2px 3px #ccc;
-}
-
-
-@media (min-width: 600px) {
-    .SearchFields {
-        width: 750px;
-    }
 }
 
 .Search {
@@ -79,3 +73,20 @@
   font-size: 16px;
   color:#808080;
 }
+
+@media (min-width: 600px) {
+  .SearchFields {
+      width: 750px;
+  }
+}
+
+@media (max-width: 500px) {
+  .Wrap {
+      width: 95%;
+  }
+
+  .SelectBox {
+    margin-right: 30px;
+  }
+}
+

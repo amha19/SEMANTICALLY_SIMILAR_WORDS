@@ -9,18 +9,18 @@ axios.defaults.baseURL = 'https://api.gavagai.se/v3';
 
 //Global request, respons and error handler
 axios.interceptors.request.use(request => {
-    console.log("inReq: ", request);
+    // console.log("inReq: ", request);
     return request;
 }, error => {
-    console.log("inRqErr: ", error);
+    // console.log("inRqErr: ", error);
     return Promise.reject(error);
 });
 
 axios.interceptors.response.use(response => {
-    console.log("inRes: ", response);
+    // console.log("inRes: ", response);
     return response;
 }, error => {
-    console.log("inRsErr: ", error);
+    // console.log("inRsErr: ", error);
     return Promise.reject(error);
 });
 
