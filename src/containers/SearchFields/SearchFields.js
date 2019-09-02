@@ -27,7 +27,7 @@ class SearchFields extends Component {
             const word = this.state.word;
             const language = this.state.language.value;
             const endpoint = '/lexicon/' + language + '/' + word
-            const apiKey = '?additionalFields=SEMANTICALLY_SIMILAR_WORDS&apiKey=3acdef1f01cbceb88b132158abd466da&polarizeWord=false';
+            const apiKey = '?additionalFields=SEMANTICALLY_SIMILAR_WORDS&apiKey=[apiKeyGoesHere]&polarizeWord=false';
             const url = endpoint + apiKey;
 
             axios.get(url)
