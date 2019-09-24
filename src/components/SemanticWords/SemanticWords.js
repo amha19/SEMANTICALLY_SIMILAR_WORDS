@@ -2,7 +2,7 @@ import React from 'react';
 
 import styles from './SemanticWords.module.css';
 
-const wordInfoHandler = word => {        
+const wordInfoHandler = (word) => {
     window.open('https://en.wikipedia.org/wiki/' + word, '_blank');
 }
 
