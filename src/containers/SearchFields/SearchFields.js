@@ -8,6 +8,8 @@ import styles from './SearchFields.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
+const apiKeyEnv = process.env.REACT_APP_GAVAGAI_API_KEY;
+
 class SearchFields extends Component {
 
     state = {
@@ -27,7 +29,7 @@ class SearchFields extends Component {
             const word = this.state.word;
             const language = this.state.language.value;
             const endpoint = '/lexicon/' + language + '/' + word
-            const apiKey = '?additionalFields=SEMANTICALLY_SIMILAR_WORDS&apiKey=3acdef1f01cbceb88b132158abd466da&polarizeWord=false';
+            const apiKey = '?additionalFields=SEMANTICALLY_SIMILAR_WORDS&apiKey=' + apiKeyEnv + '3acdef1f01cbceb88b132158abd466da&polarizeWord=false';
             const url = endpoint + apiKey;
 
             axios.get(url)
